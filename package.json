@@ -1,0 +1,56 @@
+{
+  "name": "time365-report-tool",
+  "productName": "Time365 Report Tool",
+  "version": "1.0.0",
+  "description": "Desktop tool that generates the time365.moh.gov.kw overtime summary reports (per area / combined) as PDF and CSV.",
+  "main": "main.js",
+  "author": "ideveloprs",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win --x64",
+    "release": "electron-builder --win --x64 --publish always"
+  },
+  "dependencies": {
+    "@puppeteer/browsers": "^2.4.0",
+    "electron-updater": "^6.3.9",
+    "puppeteer-core": "^23.6.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "electron": "^32.1.2",
+    "electron-builder": "^25.1.7"
+  },
+  "build": {
+    "appId": "com.ideveloprs.time365report",
+    "productName": "Time365 Report Tool",
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**",
+      "lib/**"
+    ],
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "Time365-Report-Tool-Portable-${version}.exe"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "ideveloprs",
+        "repo": "time365-report-tool"
+      }
+    ]
+  }
+}

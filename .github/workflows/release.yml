@@ -1,0 +1,32 @@
+name: Release
+
+# Triggered when you push a version tag like v1.0.1
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # lets the Action create the GitHub Release
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build & publish release
+        run: npm run release
+        env:
+          # Provided automatically by GitHub Actions; electron-builder uses it
+          # to create the Release and upload the installer + latest.yml.
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

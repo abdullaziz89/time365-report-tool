@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self'" />
+  <title>Time365 Report Tool</title>
+  <style>
+    :root {
+      --bg:#0f172a; --panel:#1e293b; --panel2:#273449; --text:#e2e8f0; --muted:#94a3b8;
+      --accent:#3b82f6; --accent2:#2563eb; --ok:#22c55e; --border:#334155;
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:"Segoe UI", Tahoma, Arial, sans-serif; background:var(--bg); color:var(--text); padding:18px; }
+    h1 { font-size:18px; margin:0 0 4px; }
+    .sub { color:var(--muted); font-size:12px; margin-bottom:16px; }
+    .card { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px; }
+    label { display:block; font-size:13px; margin-bottom:6px; color:var(--muted); }
+    .row { display:flex; gap:10px; }
+    .row > div { flex:1; }
+    input[type=text], input[type=email], input[type=password], select {
+      width:100%; padding:9px 10px; border-radius:8px; border:1px solid var(--border);
+      background:var(--panel2); color:var(--text); font-size:14px;
+    }
+    .filebox { display:flex; gap:8px; }
+    .filebox input { flex:1; }
+    button { border:none; border-radius:8px; padding:9px 14px; font-size:14px; cursor:pointer; background:var(--accent); color:#fff; font-weight:600; }
+    button.secondary { background:var(--panel2); color:var(--text); border:1px solid var(--border); font-weight:500; }
+    button:hover { background:var(--accent2); }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    .modes { display:flex; gap:18px; margin-top:4px; }
+    .modes label { display:flex; align-items:center; gap:6px; color:var(--text); font-size:14px; cursor:pointer; margin:0; }
+    #run { width:100%; padding:12px; font-size:15px; margin-top:4px; }
+    #drop {
+      border:2px dashed var(--border); border-radius:10px; padding:14px; text-align:center;
+      color:var(--muted); font-size:13px; margin-bottom:10px; transition:.15s; cursor:pointer;
+    }
+    #drop.drag { border-color:var(--accent); background:rgba(59,130,246,.08); color:var(--text); }
+    #log { background:#0b1220; border:1px solid var(--border); border-radius:8px; padding:10px;
+      height:190px; overflow:auto; font-family:Consolas, monospace; font-size:12px; white-space:pre-wrap;
+      direction:ltr; text-align:left; color:#cbd5e1; }
+    .hint { font-size:11px; color:var(--muted); margin-top:6px; }
+  </style>
+</head>
+<body>
+  <h1>أداة تقارير العمل الإضافي — Time365</h1>
+  <div class="sub">ينشئ تقرير الملخص لكل منطقة ويصدّره PDF و CSV.</div>
+
+  <div class="card">
+    <label>ملف الإكسل (Excel)</label>
+    <div id="drop">📥 اسحب وأفلت ملف الإكسل هنا، أو انقر للاختيار</div>
+    <div class="filebox">
+      <input type="text" id="excelPath" placeholder="لم يتم اختيار ملف" readonly />
+      <button class="secondary" id="pickExcel">اختيار…</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <label>بيانات الدخول إلى Time365 (اتركها فارغة لتسجيل الدخول يدويًا)</label>
+    <div class="row">
+      <div>
+        <input type="email" id="username" placeholder="البريد الإلكتروني" autocomplete="off" />
+      </div>
+      <div>
+        <input type="password" id="password" placeholder="كلمة المرور" autocomplete="off" />
+      </div>
+    </div>
+    <label style="display:flex; align-items:center; gap:6px; color:var(--text); font-size:13px; cursor:pointer; margin-top:10px;">
+      <input type="checkbox" id="remember" /> حفظ بيانات الدخول لاستخدامها لاحقًا
+    </label>
+    <div class="hint">عند التفعيل تُحفظ كلمة المرور <b>مشفّرة</b> على هذا الجهاز فقط (Windows DPAPI). أزِل العلامة لحذفها.</div>
+  </div>
+
+  <div class="card">
+    <div class="row">
+      <div>
+        <label>الشهر</label>
+        <select id="month"></select>
+      </div>
+      <div>
+        <label>السنة</label>
+        <select id="year"></select>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <label>طريقة الإخراج</label>
+      <div class="modes">
+        <label><input type="radio" name="mode" value="per_area" checked /> لكل منطقة</label>
+        <label><input type="radio" name="mode" value="combined" /> مجمّع (الكل)</label>
+        <label><input type="radio" name="mode" value="both" /> الاثنان</label>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <label>مجلد الحفظ</label>
+      <div class="filebox">
+        <input type="text" id="outputDir" readonly />
+        <button class="secondary" id="pickOutput">تغيير…</button>
+      </div>
+    </div>
+  </div>
+
+  <button id="run">▶ إنشاء التقارير</button>
+
+  <div class="card" style="margin-top:14px;">
+    <label>السجل</label>
+    <div id="log"></div>
+    <div class="hint">إذا تركت بيانات الدخول فارغة، سجّل الدخول في نافذة المتصفح التي ستفتح.</div>
+  </div>
+
+  <script src="renderer.js"></script>
+</body>
+</html>
