@@ -48,7 +48,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "ideveloprs",
+        "owner": "abdullaziz89",
         "repo": "time365-report-tool"
       }
     ]
