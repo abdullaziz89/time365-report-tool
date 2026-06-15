@@ -1,7 +1,7 @@
 {
   "name": "time365-report-tool",
   "productName": "Time365 Report Tool",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Desktop tool that generates the time365.moh.gov.kw overtime summary reports (per area / combined) as PDF and CSV.",
   "main": "main.js",
   "author": "ideveloprs",
